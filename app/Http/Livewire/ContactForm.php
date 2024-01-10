@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Mail\Contact;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
@@ -46,7 +47,14 @@ class ContactForm extends Component
             $this->subject = '';
             $this->name = '';
             $this->emailMessage = '';
-        } catch (Exception) {
+        } catch (Exception $e) {
+            Log::channel('general-issues')->error('An error occurred while sending contact email.', [
+                'email' => $this->email,
+                'name' => $this->name,
+                'subject' => $this->subject,
+                'emailMessage' => $this->emailMessage,
+                'exception' => $e->getMessage(),
+            ]);
             $this->message = 'Errore durante l\'invio della mail';
             $this->success = false;
             $this->error = true;
